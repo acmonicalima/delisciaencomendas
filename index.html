@@ -16,50 +16,11 @@
     --dark:#1a1a1a;
     --card-bg:#fff;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;margin:0;padding:0}
   body{ font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin:0; background:var(--light); color:var(--dark) }
   .app{ display:flex; min-height:100vh; flex-direction:column }
   @media (min-width:801px){
     .app{ flex-direction:row }
-  }
-
-  /* Sidebar / Drawer */
-  .sidebar{
-    width:220px; background:var(--primary); color:#fff; padding:1rem;
-    display:flex; flex-direction:column;
-    position:fixed; inset:0 0 0 auto; z-index:1001; transform:translateX(100%);
-    transition:transform 0.3s ease;
-  }
-  .sidebar.open{ transform:translateX(0) }
-  @media (min-width:801px){
-    .sidebar{
-      position:static; transform:none; display:flex; flex-direction:column;
-    }
-  }
-
-  /* Overlay para drawer mobile */
-  .sidebar-overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000;
-    display:none;
-  }
-  .sidebar-overlay.open{
-    display:block;
-  }
-
-  .brand{ font-weight:700; margin-bottom:1rem; font-size:1.2rem }
-  nav button{
-    background:transparent; border:none; color:white; text-align:left;
-    padding:0.75rem 0; cursor:pointer; width:100%; border-radius:6px;
-    font-size:1rem;
-  }
-  nav button.active{ background:rgba(255,255,255,0.12) }
-  
-  .content{
-    flex:1; padding:1rem;
-    margin-top:56px; /* altura do mobile header */
-  }
-  @media (min-width:801px){
-    .content{ margin-top:0; }
   }
 
   /* Mobile header */
@@ -78,6 +39,45 @@
   }
   @media (max-width:800px){
     .mobile-header{ display:flex }
+  }
+
+  /* Sidebar / Drawer */
+  .sidebar{
+    width:220px; background:var(--primary); color:#fff; padding:1rem;
+    display:flex; flex-direction:column;
+    position:fixed; inset:0 0 0 auto; z-index:1001; transform:translateX(100%);
+    transition:transform 0.3s ease;
+  }
+  .sidebar.open{ transform:translateX(0) }
+  @media (min-width:801px){
+    .sidebar{
+      position:static; transform:none; display:flex; flex-direction:column;
+    }
+  }
+
+  /* Overlay para drawer */
+  .sidebar-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1000;
+    display:none;
+  }
+  .sidebar-overlay.open{
+    display:block;
+  }
+
+  .brand{ font-weight:700; margin-bottom:1rem; font-size:1.2rem }
+  nav button{
+    background:transparent; border:none; color:white; text-align:left;
+    padding:0.75rem 0; cursor:pointer; width:100%; border-radius:6px;
+    font-size:1rem;
+  }
+  nav button.active{ background:rgba(255,255,255,0.12) }
+
+  .content{
+    flex:1; padding:1rem;
+    margin-top:56px; /* altura do mobile header */
+  }
+  @media (min-width:801px){
+    .content{ margin-top:0; }
   }
 
   header.top{
@@ -112,7 +112,7 @@
     background:var(--primary); color:white; border:none;
     padding:0.75rem 1rem; border-radius:8px;
     cursor:pointer; font-weight:600;
-    min-height:48px; /* tamanho mínimo para toque */
+    min-height:48px;
     font-size:0.95rem;
     flex:1 1 auto;
   }
@@ -127,7 +127,7 @@
     border:1px solid #ddd; margin-top:0.3rem;
     font-size:1rem;
   }
-  select{ appearance:auto }
+  textarea{ min-height:80px; resize:vertical }
 
   .muted{ color:#666; font-size:0.9rem }
   .list-item{
@@ -165,7 +165,7 @@
 
   .hint{ font-size:0.85rem; color:#666; margin-top:0.3rem }
 
-  /* Encomendas list — melhorar layout em mobile */
+  /* Encomendas list */
   .encomenda-card{
     display:flex; flex-direction:column; gap:0.5rem;
   }
@@ -179,11 +179,8 @@
     display:flex; flex-wrap:wrap; gap:0.3rem;
     min-width:200px;
   }
-  @media (max-width:599px){
-    .encomenda-actions{ justify-content:flex-start }
-  }
 
-  /* Botão flutuante em mobile (opcional, mas útil) */
+  /* FAB para mobile */
   .fab{
     position:fixed; bottom:1.5rem; right:1.5rem;
     width:56px; height:56px; border-radius:28px;
@@ -199,17 +196,17 @@
 </style>
 </head>
 <body>
-<!-- Mobile header (só aparece em <800px) -->
+<!-- Mobile header -->
 <header class="mobile-header" id="mobileHeader">
   <button id="btnToggleSidebar">☰</button>
   <h1 id="mobileTitle">Dashboard</h1>
-  <div></div> <!-- placeholder para alinhar -->
+  <div></div>
 </header>
 
-<!-- Overlay do drawer -->
+<!-- Sidebar overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- Sidebar como drawer em mobile -->
+<!-- Sidebar drawer -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">🧁 DeLis Cia Encomendas</div>
   <nav aria-label="Main">
@@ -289,7 +286,7 @@
   </section>
 </main>
 
-<!-- Botão flutuante para "Novo" em mobile -->
+<!-- Botão flutuante -->
 <button class="fab" id="fabNovo">+</button>
 
 <div id="modalRoot" style="display:none"></div>
@@ -297,11 +294,9 @@
 
 <script>
 /*
-  index.html responsivo — DeLis Cia Encomendas
-  ✅ Mobile-first (tablet & celular)
-  ✅ Drawer no lugar da sidebar em telas pequenas
-  ✅ Botões e inputs adaptados para toque
-  ✅ Back4App intacto — zero alteração na lógica de dados
+  ✅ DeLis Cia Encomendas — Versão Responsiva Completa
+  ✅ Funciona em celular, tablet e desktop
+  ✅ Back4App + localStorage fallback
 */
 
 /* =================== CONFIGURAÇÃO BACK4APP =================== */
@@ -331,9 +326,145 @@ function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slic
 function money(v){ return v==null ? 'R$ 0,00' : new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v) }
 function showToast(msg, t=2200){ const el=document.getElementById('toast'); el.textContent=msg; el.style.display='block'; clearTimeout(el._to); el._to=setTimeout(()=>el.style.display='none',t); }
 
-/* =================== PERSISTÊNCIA (mantida 100% igual) =================== */
-// → (mantive todas as funções: fetch/save/deleteCliente/Produto/Encomenda — não repeti pra não alongar)
-// Se quiser, posso colar elas de volta aqui — mas como não mudaram, omiti por brevidade.
+/* =================== PERSISTÊNCIA COMPLETA =================== */
+
+/* Clientes */
+async function fetchClientes(){
+  if (USING_PARSE){
+    const C = Parse.Object.extend('Cliente');
+    const q = new Parse.Query(C); q.ascending('nome');
+    const res = await q.find();
+    store.clientes = res.map(r=>({ id:r.id, nome:r.get('nome'), telefone:r.get('telefone')||'' }));
+  } else {
+    store.clientes = JSON.parse(localStorage.getItem('clientes')||'[]');
+  }
+  return store.clientes;
+}
+async function saveCliente(c){
+  if (USING_PARSE){
+    const C = Parse.Object.extend('Cliente');
+    if (c.id){
+      const q = new Parse.Query(C); const obj = await q.get(c.id);
+      obj.set('nome', c.nome); obj.set('telefone', c.telefone||''); await obj.save();
+    } else {
+      const obj = new C(); obj.set('nome', c.nome); obj.set('telefone', c.telefone||''); const s = await obj.save(); c.id = s.id;
+    }
+    await fetchClientes();
+  } else {
+    if (!c.id) c.id = uid('cli');
+    const idx = (store.clientes||[]).findIndex(x=>x.id===c.id);
+    if (idx>=0) store.clientes[idx] = c; else store.clientes.push(c);
+    localStorage.setItem('clientes', JSON.stringify(store.clientes));
+  }
+  showToast('Cliente salvo ✅');
+}
+async function deleteCliente(id){
+  if (USING_PARSE){
+    const C = Parse.Object.extend('Cliente'); const q=new Parse.Query(C); const obj=await q.get(id); await obj.destroy(); await fetchClientes();
+  } else {
+    store.clientes = store.clientes.filter(c=>c.id!==id); localStorage.setItem('clientes', JSON.stringify(store.clientes));
+  }
+  showToast('Cliente removido');
+}
+
+/* Produtos */
+async function fetchProdutos(){
+  if (USING_PARSE){
+    const P = Parse.Object.extend('Produto'); const q=new Parse.Query(P); q.ascending('nome');
+    const res = await q.find();
+    store.produtos = res.map(r=>({ id:r.id, nome:r.get('nome'), descricao:r.get('descricao')||'', preco: r.get('preco')||0 }));
+  } else {
+    store.produtos = JSON.parse(localStorage.getItem('produtos')||'[]');
+  }
+  return store.produtos;
+}
+async function saveProduto(p){
+  if (USING_PARSE){
+    const P = Parse.Object.extend('Produto');
+    if (p.id){
+      const q=new Parse.Query(P); const obj=await q.get(p.id);
+      obj.set('nome', p.nome); obj.set('descricao', p.descricao||''); obj.set('preco', p.preco||0); await obj.save();
+    } else {
+      const obj = new P(); obj.set('nome', p.nome); obj.set('descricao', p.descricao||''); obj.set('preco', p.preco||0); const s = await obj.save(); p.id = s.id;
+    }
+    await fetchProdutos();
+  } else {
+    if (!p.id) p.id = uid('prd');
+    const idx = (store.produtos||[]).findIndex(x=>x.id===p.id);
+    if (idx>=0) store.produtos[idx] = p; else store.produtos.push(p);
+    localStorage.setItem('produtos', JSON.stringify(store.produtos));
+  }
+  showToast('Produto salvo ✅');
+}
+async function deleteProduto(id){
+  if (USING_PARSE){
+    const P = Parse.Object.extend('Produto'); const q=new Parse.Query(P); const obj=await q.get(id); await obj.destroy(); await fetchProdutos();
+  } else {
+    store.produtos = store.produtos.filter(p=>p.id!==id); localStorage.setItem('produtos', JSON.stringify(store.produtos));
+  }
+  showToast('Produto removido');
+}
+
+/* Encomendas */
+async function fetchEncomendas(){
+  if (USING_PARSE){
+    const En = Parse.Object.extend('Encomenda'); const q=new Parse.Query(En); q.descending('createdAt'); q.include('cliente'); q.include('produto');
+    const res = await q.find();
+    store.encomendas = res.map(r=>({
+      id: r.id,
+      clienteId: r.get('cliente') ? r.get('cliente').id : null,
+      clienteNome: r.get('cliente') ? r.get('cliente').get('nome') : r.get('clienteNome') || '',
+      produtoId: r.get('produto') ? r.get('produto').id : null,
+      produtoNome: r.get('produto') ? r.get('produto').get('nome') : r.get('produtoNome') || '',
+      quantidade: r.get('quantidade') || 1,
+      valor: r.get('valor') || 0,
+      dataEntrega: r.get('dataEntrega') || '',
+      statusProducao: r.get('statusProducao') || 'A Fazer',
+      statusPagamento: r.get('statusPagamento') || 'Pendente',
+      logs: r.get('logs') || []
+    }));
+  } else {
+    store.encomendas = JSON.parse(localStorage.getItem('encomendas')||'[]');
+  }
+  return store.encomendas;
+}
+async function saveEncomenda(en){
+  if (USING_PARSE){
+    const En = Parse.Object.extend('Encomenda');
+    if (en.id){
+      const q = new Parse.Query(En); const obj = await q.get(en.id);
+      if (en.clienteId) obj.set('cliente', { __type:'Pointer', className:'Cliente', objectId: en.clienteId }); else obj.set('clienteNome', en.clienteNome);
+      if (en.produtoId) obj.set('produto', { __type:'Pointer', className:'Produto', objectId: en.produtoId }); else obj.set('produtoNome', en.produtoNome);
+      obj.set('quantidade', en.quantidade || 1); obj.set('valor', en.valor || 0);
+      obj.set('dataEntrega', en.dataEntrega || '');
+      obj.set('statusProducao', en.statusProducao || 'A Fazer'); obj.set('statusPagamento', en.statusPagamento || 'Pendente'); obj.set('logs', en.logs || []);
+      await obj.save();
+    } else {
+      const obj = new En();
+      if (en.clienteId) obj.set('cliente', { __type:'Pointer', className:'Cliente', objectId: en.clienteId }); else obj.set('clienteNome', en.clienteNome);
+      if (en.produtoId) obj.set('produto', { __type:'Pointer', className:'Produto', objectId: en.produtoId }); else obj.set('produtoNome', en.produtoNome);
+      obj.set('quantidade', en.quantidade || 1); obj.set('valor', en.valor || 0);
+      obj.set('dataEntrega', en.dataEntrega || '');
+      obj.set('statusProducao', en.statusProducao || 'A Fazer'); obj.set('statusPagamento', en.statusPagamento || 'Pendente'); obj.set('logs', en.logs || []);
+      const s = await obj.save(); en.id = s.id;
+    }
+    await fetchEncomendas();
+  } else {
+    if (!en.id) en.id = uid('enc');
+    const idx = (store.encomendas||[]).findIndex(x=>x.id===en.id);
+    if (idx>=0) store.encomendas[idx] = en; else store.encomendas.unshift(en);
+    localStorage.setItem('encomendas', JSON.stringify(store.encomendas));
+  }
+  showToast('Encomenda salva ✅');
+}
+async function deleteEncomenda(id){
+  if (USING_PARSE){
+    const En = Parse.Object.extend('Encomenda'); const q=new Parse.Query(En); const obj = await q.get(id); await obj.destroy(); await fetchEncomendas();
+  } else {
+    store.encomendas = store.encomendas.filter(e=>e.id!==id); localStorage.setItem('encomendas', JSON.stringify(store.encomendas));
+  }
+  showToast('Encomenda cancelada');
+}
 
 /* =================== UTILS =================== */
 function preparePhoneForSave(raw){
@@ -366,8 +497,12 @@ function montarMensagemWhatsApp(en){
   return `Olá, ${nome}! Sua encomenda do produto ${produto} está prevista para ${displayDate}.`;
 }
 
-/* =================== RENDERIZAÇÃO (ligeiramente ajustada para mobile) =================== */
+function pushLog(en, text){
+  en.logs = en.logs || [];
+  en.logs.push(`${new Date().toLocaleString('pt-BR')} - ${text}`);
+}
 
+/* =================== RENDERIZAÇÃO =================== */
 async function renderAll(){
   await fetchClientes(); await fetchProdutos(); await fetchEncomendas();
   document.getElementById('kpi-faturamento').textContent = money(store.encomendas.filter(e=>e.statusProducao==='Entregue').reduce((s,e)=>s+ (e.valor||0),0));
@@ -446,18 +581,212 @@ function renderEncomendas(){
   `).join('');
 }
 
-/* =================== MODAIS & CRUD UI (sem mudança de lógica) =================== */
+/* =================== MODAIS & CRUD UI =================== */
 const modalRoot = document.getElementById('modalRoot');
 function openModal(html){ modalRoot.style.display='block'; modalRoot.innerHTML = `<div class="modal">${html}</div>`; }
 function closeModal(){ modalRoot.style.display='none'; modalRoot.innerHTML=''; }
 
-/* → Funções openClienteModal, openProdutoModal, openEncomendaModal, etc. mantidas 100% — só mudamos layout dos modais via CSS */
+/* CLIENTE */
+function openClienteModal(existing){
+  const nome = existing?.nome || '';
+  const tel = existing?.telefone || '';
+  openModal(`
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center"><h3>${existing?'Editar Cliente':'Novo Cliente'}</h3><div class="close-x" onclick="closeModal()">✖</div></div>
+      <label>Nome<input id="m_cli_nome" placeholder="Ex: Maria da Silva" value="${nome}"></label>
+      <label>Telefone<input id="m_cli_tel" placeholder="Ex: (21) 98765-4321 — será salvo como +5521987654321" value="${tel}"></label>
+      <div class="hint">Formato salvo para WhatsApp: +55DDDNÚMERO (será formatado automaticamente)</div>
+      <div style="display:flex; gap:0.5rem; margin-top:1rem">
+        <button class="btn" id="saveCliBtn">Salvar</button>
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('saveCliBtn').addEventListener('click', async ()=>{
+    const nomeVal = document.getElementById('m_cli_nome').value.trim();
+    const telRaw = document.getElementById('m_cli_tel').value.trim();
+    if (!nomeVal) return showToast('Nome é obrigatório');
+    const telPrepared = preparePhoneForSave(telRaw);
+    if (!telPrepared) return alert('Telefone inválido. Inclua DDD (ex: (21) 98765-4321).');
+    const c = { id: existing?.id, nome: nomeVal, telefone: telPrepared };
+    await saveCliente(c); await renderAll(); closeModal();
+  });
+}
+
+/* PRODUTO */
+function openProdutoModal(existing){
+  const nome = existing?.nome || '';
+  const desc = existing?.descricao || '';
+  const preco = existing?.preco || '';
+  openModal(`
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center"><h3>${existing?'Editar Produto':'Novo Produto'}</h3><div class="close-x" onclick="closeModal()">✖</div></div>
+      <label>Nome<input id="m_prd_nome" placeholder="Ex: Brigadeiro Gourmet" value="${nome}"></label>
+      <label>Preço (ex: 40 — sem vírgula; pode usar decimais com ponto: 40.50)<input id="m_prd_preco" type="text" placeholder="Ex: 40" value="${preco}"></label>
+      <label>Descrição<textarea id="m_prd_desc" placeholder="Breve descrição">${desc}</textarea></label>
+      <div style="display:flex; gap:0.5rem; margin-top:1rem">
+        <button class="btn" id="savePrdBtn">Salvar</button>
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('savePrdBtn').addEventListener('click', async ()=>{
+    const nomeVal = document.getElementById('m_prd_nome').value.trim();
+    let precoRaw = document.getElementById('m_prd_preco').value.trim();
+    const descVal = document.getElementById('m_prd_desc').value.trim();
+    if (!nomeVal) return showToast('Nome é obrigatório');
+    precoRaw = precoRaw.replace(',', '.');
+    const precoNum = parseFloat(precoRaw) || 0;
+    const p = { id: existing?.id, nome: nomeVal, preco: precoNum, descricao: descVal };
+    await saveProduto(p); await renderAll(); closeModal();
+  });
+}
+
+/* ENCOMENDA */
+function openEncomendaModal(existing){
+  const clientesOptions = ['<option value="">Selecione...</option>'].concat(store.clientes.map(c=>`<option value="${c.id}">${c.nome}</option>`)).join('');
+  const produtosOptions = ['<option value="">Selecione...</option>'].concat(store.produtos.map(p=>`<option value="${p.id}" data-preco="${p.preco}">${p.nome} - ${money(p.preco)}</option>`)).join('');
+  const dataVal = existing?.dataEntrega ? existing.dataEntrega : new Date().toISOString().slice(0,10);
+  const quantidadeVal = existing?.quantidade || 1;
+  const valorVal = existing?.valor || '';
+  openModal(`
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center"><h3>${existing?'Editar Encomenda':'Nova Encomenda'}</h3><div class="close-x" onclick="closeModal()">✖</div></div>
+      <label>Cliente<select id="m_enc_cliente">${clientesOptions}</select></label>
+      <label>Produto<select id="m_enc_produto">${produtosOptions}</select></label>
+      <label>Quantidade<input id="m_enc_qtd" type="number" min="1" value="${quantidadeVal}"></label>
+      <label>Valor (ex: 40 — sem vírgula; use ponto para decimais: 40.50)<input id="m_enc_valor" type="text" placeholder="Ex: 40" value="${valorVal}"></label>
+      <label>Data de entrega<input id="m_enc_data" type="date" value="${dataVal}"></label>
+      <div style="display:flex; gap:0.5rem; margin-top:1rem">
+        <button class="btn" id="saveEncBtn">Salvar</button>
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  `);
+
+  if (existing){
+    document.getElementById('m_enc_cliente').value = existing.clienteId || '';
+    document.getElementById('m_enc_produto').value = existing.produtoId || '';
+    document.getElementById('m_enc_qtd').value = existing.quantidade || 1;
+    document.getElementById('m_enc_valor').value = existing.valor || '';
+  }
+
+  document.getElementById('saveEncBtn').addEventListener('click', async ()=>{
+    const clienteId = document.getElementById('m_enc_cliente').value;
+    const produtoId = document.getElementById('m_enc_produto').value;
+    const quantidade = parseInt(document.getElementById('m_enc_qtd').value) || 1;
+    let valorRaw = document.getElementById('m_enc_valor').value.trim();
+    const dataEntrega = document.getElementById('m_enc_data').value;
+    if (!clienteId || !produtoId) return showToast('Selecione cliente e produto');
+    valorRaw = valorRaw.replace(',', '.');
+    const valor = parseFloat(valorRaw) || calcularValorEncomenda(produtoId, quantidade);
+    const clienteNome = (store.clientes.find(c=>c.id===clienteId)||{}).nome || '';
+    const produtoNome = (store.produtos.find(p=>p.id===produtoId)||{}).nome || '';
+    const en = { 
+      id: existing?.id, 
+      clienteId, clienteNome, 
+      produtoId, produtoNome, 
+      quantidade, valor, dataEntrega, 
+      statusProducao: existing?.statusProducao || 'A Fazer', 
+      statusPagamento: existing?.statusPagamento || 'Pendente', 
+      logs: existing?.logs||[] 
+    };
+    pushLog(en, existing ? 'Encomenda editada' : 'Encomenda criada');
+    await saveEncomenda(en);
+    await renderAll();
+    closeModal();
+
+    // WhatsApp quick modal
+    setTimeout(()=> {
+      const mensagem = montarMensagemWhatsApp(en);
+      const cliente = store.clientes.find(c=>c.id===en.clienteId) || { telefone:'' };
+      const numero = (cliente.telefone || '');
+      if (!numero){
+        alert('Encomenda salva, mas cliente não tem telefone válido para WhatsApp.');
+        return;
+      }
+      openModal(`
+        <div class="modal-card">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <h3>Encomenda salva ✅</h3>
+            <div class="close-x" onclick="closeModal()">✖</div>
+          </div>
+          <p>Mensagem pronta para enviar via WhatsApp:</p>
+          <div class="card"><em>${mensagem}</em></div>
+          <div style="display:flex; gap:0.6rem; margin-top:1rem">
+            <button class="btn" id="openWppBtn">Abrir WhatsApp</button>
+            <button class="btn secondary" onclick="closeModal()">Fechar</button>
+          </div>
+        </div>
+      `);
+      document.getElementById('openWppBtn').addEventListener('click', ()=>{
+        const n = numero.replace(/\D/g,'');
+        const url = `https://wa.me/${n}?text=${encodeURIComponent(mensagem)}`;
+        window.open(url, '_blank');
+      });
+    }, 200);
+  });
+}
+
+/* STATUS modal */
+function abrirStatusModal(id){
+  const e = store.encomendas.find(x=>x.id===id); if(!e) return;
+  openModal(`
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center"><h3>Atualizar Status - ${e.clienteNome}</h3><div class="close-x" onclick="closeModal()">✖</div></div>
+      <label>Status Produção
+        <select id="m_st_prod">
+          <option value="A Fazer">A Fazer</option>
+          <option value="Pronto para Entrega">Pronto para Entrega</option>
+          <option value="Entregue">Entregue</option>
+        </select>
+      </label>
+      <label>Status Pagamento
+        <select id="m_st_pay">
+          <option value="Pendente">Pendente</option>
+          <option value="Sinal Pago">Sinal Pago</option>
+          <option value="Pago Totalmente">Pago Totalmente</option>
+        </select>
+      </label>
+      <div style="display:flex; gap:0.5rem; margin-top:1rem">
+        <button class="btn" id="saveStatusBtn">Salvar</button>
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  `);
+  document.getElementById('m_st_prod').value = e.statusProducao || 'A Fazer';
+  document.getElementById('m_st_pay').value = e.statusPagamento || 'Pendente';
+  document.getElementById('saveStatusBtn').addEventListener('click', async ()=>{
+    const novoProd = document.getElementById('m_st_prod').value;
+    const novoPay = document.getElementById('m_st_pay').value;
+    e.statusProducao = novoProd; e.statusPagamento = novoPay;
+    pushLog(e, `Status produção: ${novoProd} | pagamento: ${novoPay}`);
+    await saveEncomenda(e); await renderAll(); closeModal();
+  });
+}
+
+/* =================== AÇÕES GLOBAIS =================== */
+function editarProduto(id){ const p = store.produtos.find(x=>x.id===id); if(!p) return; openProdutoModal(p); }
+function removerProduto(id){ if(!confirm('Remover produto?')) return; deleteProduto(id).then(()=>renderAll()); }
+function editarCliente(id){ const c = store.clientes.find(x=>x.id===id); if(!c) return; openClienteModal(c); }
+function removerCliente(id){ if(!confirm('Remover cliente?')) return; deleteCliente(id).then(()=>renderAll()); }
+function editarEncomenda(id){ const e = store.encomendas.find(x=>x.id===id); if(!e) return; openEncomendaModal(e); }
+function cancelarEncomenda(id){ if(!confirm('Cancelar encomenda?')) return; deleteEncomenda(id).then(()=>renderAll()); }
+function compartilharWhatsApp(id){
+  const e = store.encomendas.find(x=>x.id===id); if(!e) return;
+  const cliente = store.clientes.find(c=>c.id===e.clienteId) || { telefone:'' };
+  const numero = (cliente.telefone||'');
+  if (!numero) { alert('Telefone inválido para WhatsApp'); return; }
+  const mensagem = montarMensagemWhatsApp(e);
+  const n = numero.replace(/\D/g,'');
+  const url = `https://wa.me/${n}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, '_blank');
+}
 
 /* =================== CONTROLE DE MOBILE DRAWER =================== */
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 const btnToggle = document.getElementById('btnToggleSidebar');
-const btnCloseSidebar = document.querySelectorAll('.nav-btn');
 
 function toggleSidebar(){
   sidebar.classList.toggle('open');
@@ -475,7 +804,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
   });
 });
 
-/* =================== NAV & MOBILE SYNC =================== */
+/* =================== NAV & UI SYNC =================== */
 function updateMobileTitle(hash){
   const titles = {
     '#dashboard': 'Dashboard',
@@ -505,7 +834,6 @@ function showView(hash){
   else if (h==='#encomendas'){ btn.textContent = '+ Encomenda'; btn.onclick = ()=>openEncomendaModal(); }
   else { btn.textContent = '+ Novo'; btn.onclick = ()=>openEncomendaModal(); }
 
-  // Sincroniza FAB
   document.getElementById('fabNovo').onclick = btn.onclick;
 }
 
@@ -514,25 +842,20 @@ document.getElementById('btnNovoProduto').addEventListener('click', ()=> openPro
 document.getElementById('btnNovoCliente').addEventListener('click', ()=> openClienteModal());
 document.getElementById('btnNovaEncomenda').addEventListener('click', ()=> openEncomendaModal());
 
-// FAB também abre a ação correta
-document.getElementById('fabNovo').addEventListener('click', ()=>{
-  document.getElementById('btnNovo').click();
-});
+/* Registra funções globais para onclick inline */
+window.openClienteModal = openClienteModal;
+window.openProdutoModal = openProdutoModal;
+window.openEncomendaModal = openEncomendaModal;
+window.editarProduto = editarProduto;
+window.removerProduto = removerProduto;
+window.editarCliente = editarCliente;
+window.removerCliente = removerCliente;
+window.editarEncomenda = editarEncomenda;
+window.cancelarEncomenda = cancelarEncomenda;
+window.abrirStatusModal = abrirStatusModal;
+window.compartilharWhatsApp = compartilharWhatsApp;
 
-/* Funções globais (necessárias para onclick inline) */
-window.editarProduto = editarProduto; window.removerProduto = removerProduto;
-window.editarCliente = editarCliente; window.removerCliente = removerCliente;
-window.editarEncomenda = editarEncomenda; window.cancelarEncomenda = cancelarEncomenda;
-window.abrirStatusModal = abrirStatusModal; window.compartilharWhatsApp = compartilharWhatsApp;
-window.openClienteModal = openClienteModal; window.openProdutoModal = openProdutoModal; window.openEncomendaModal = openEncomendaModal;
-
-/* ⚠️ IMPORTANTE: cole aqui TODAS as funções de persistência (fetch/save/deleteCliente/Produto/Encomenda) — elas não mudaram, mas são essenciais para rodar. */
-/* Como já estão no seu código original, só copie-as do seu arquivo atual e cole abaixo desta linha. */
-
-/* === Cole aqui as funções: fetchClientes, saveCliente, deleteCliente, fetchProdutos, saveProduto, deleteProduto, fetchEncomendas, saveEncomenda, deleteEncomenda === */
-/* (Se quiser, posso colar elas completas em uma próxima mensagem — só avisar!) */
-
-/* Inicialização */
+/* =================== INICIALIZAÇÃO =================== */
 (async function init(){
   await renderAll();
   showView(location.hash || '#dashboard');
